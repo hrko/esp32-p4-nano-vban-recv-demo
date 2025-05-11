@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 // -----------------------------------------------------------------------------
-// 定数定義 (Constants)
+// Constant Definitions
 // -----------------------------------------------------------------------------
 
 #define VBAN_DEFAULT_PORT 6980
@@ -19,32 +19,32 @@ extern "C" {
 #define VBAN_MAX_PAYLOAD_SIZE 1436																			 // VBAN Data max size
 #define VBAN_MAX_PACKET_SIZE (VBAN_HEADER_SIZE + VBAN_MAX_PAYLOAD_SIZE)	 // 1464 bytes
 #define VBAN_STREAM_NAME_MAX_LEN 16
-#define VBAN_MAGIC_NUMBER 0x4E414256	// 'VBAN' (リトルエンディアンでは 'N','A','B','V')
+#define VBAN_MAGIC_NUMBER 0x4E414256	// 'VBAN' (In little-endian, 'N','A','B','V')
 
-// サブプロトコル識別子 (Sub-protocol Identifiers) - Page 8
+// Sub-protocol Identifiers - Page 8
 #define VBAN_SUBPROTOCOL_AUDIO 0x00
 #define VBAN_SUBPROTOCOL_SERIAL 0x20
 #define VBAN_SUBPROTOCOL_TEXT 0x40
 #define VBAN_SUBPROTOCOL_SERVICE 0x60
-// 他のサブプロトコルは将来追加 (Others to be added in the future)
+// Other sub-protocols will be added in the future
 
-// オーディオコーデック識別子 (Audio Codec Identifiers) - Page 10
+// Audio Codec Identifiers - Page 10
 #define VBAN_CODEC_PCM 0x00
-// 他のコーデックは将来追加 (Others to be added in the future)
+// Other codecs will be added in the future
 
-// SR_SUBPROTOCOL バイトのマスクとシフト (Masks and shifts for SR_SUBPROTOCOL byte)
+// Masks and shifts for SR_SUBPROTOCOL byte
 #define VBAN_SR_INDEX_MASK 0x1F			// Bits 0-4 for Sample Rate Index
 #define VBAN_SUBPROTOCOL_MASK 0xE0	// Bits 5-7 for Sub-protocol
 #define VBAN_SUBPROTOCOL_SHIFT 5
 
-// FORMAT_CODEC バイトのマスクとシフト (Masks and shifts for FORMAT_CODEC byte)
+// Masks and shifts for FORMAT_CODEC byte
 #define VBAN_DATATYPE_MASK 0x07			 // Bits 0-2 for Data Type
 #define VBAN_RESERVED_BIT_MASK 0x08	 // Bit 3 (Reserved, must be 0 for PCM)
 #define VBAN_CODEC_MASK 0xF0				 // Bits 4-7 for Codec
 #define VBAN_CODEC_SHIFT 4
 
 // -----------------------------------------------------------------------------
-// エラーコード定義 (Error Codes)
+// Error Code Definitions
 // -----------------------------------------------------------------------------
 #define ESP_ERR_VBAN_BASE 0x70000	 // Base for VBAN errors
 #define ESP_ERR_VBAN_INVALID_ARG (ESP_ERR_VBAN_BASE + 1)
@@ -64,7 +64,7 @@ extern "C" {
 #define ESP_ERR_VBAN_DATA_SIZE_MISMATCH (ESP_ERR_VBAN_BASE + 15)
 
 // -----------------------------------------------------------------------------
-// データ構造定義 (Data Structures)
+// Data Structure Definitions
 // -----------------------------------------------------------------------------
 
 /**
@@ -188,7 +188,7 @@ typedef struct {
 typedef struct vban_instance_s* vban_handle_t;
 
 // -----------------------------------------------------------------------------
-// 関数プロトタイプ宣言 (Function Prototypes)
+// Function Prototypes
 // -----------------------------------------------------------------------------
 
 /**

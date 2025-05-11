@@ -15,8 +15,8 @@
 static const char* TAG = "vban_demo";
 static circular_buffer_t cb;
 
-#define VBAN_LISTEN_PORT VBAN_DEFAULT_PORT	// または送信側が指定するポート
-#define VBAN_EXPECTED_STREAM "TestStream1"	// 受信したいストリーム名 (空文字列で任意のストリームを受信)
+#define VBAN_LISTEN_PORT VBAN_DEFAULT_PORT	// Or the port specified by the sender
+#define VBAN_EXPECTED_STREAM "TestStream1"	// Stream name to receive (empty string to receive any stream)
 #define SPEAKER_VOLUME 60										// Volume level (0-100)
 #define SAMPLE_RATE 48000										// Sample rate in Hz
 #define BIT_DEPTH 16												// Bit depth
@@ -193,12 +193,11 @@ void app_main(void) {
 	strncpy(receiver_cfg.expected_stream_name, VBAN_EXPECTED_STREAM, VBAN_STREAM_NAME_MAX_LEN - 1);
 	receiver_cfg.listen_port = VBAN_LISTEN_PORT;
 	receiver_cfg.audio_callback = vban_receive_callback;
-	// receiver_cfg.user_context = &some_user_data; // 必要であればユーザーデータを渡す
 
-	// 受信タスクのパラメータ設定 (vban.cのデフォルト値でよければ設定不要)
-	receiver_cfg.core_id = -1;	// 任意のコアで実行
+	// Set parameters for the receiving task (unnecessary if using default values in vban.c)
+	receiver_cfg.core_id = tskNO_AFFINITY;	// Run on any core
 	receiver_cfg.task_priority = 5;
-	receiver_cfg.task_stack_size = 4096 * 2;	// コールバック内でログ出力など多めにする場合はスタックを増やす
+	receiver_cfg.task_stack_size = 4096;
 
 	vban_handle_t receiver_handle = vban_receiver_create(&receiver_cfg);
 	if (!receiver_handle) {

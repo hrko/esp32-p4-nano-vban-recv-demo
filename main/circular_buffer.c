@@ -16,10 +16,10 @@ int circular_buffer_init(circular_buffer_t *cb, size_t capacity) {
 		return CB_ERROR_INVALID_ARG;
 	}
 
-	// 内部バッファは指定容量の2倍確保
+	// The internal buffer is allocated at twice the specified capacity
 	cb->buffer = (char *)malloc(capacity * 2);
 	if (!cb->buffer) {
-		cb->is_initialized = false;	 // 念のため初期化失敗状態に
+		cb->is_initialized = false;	 // Set to uninitialized state just in case
 		return CB_ERROR_ALLOC_FAILED;
 	}
 
@@ -35,7 +35,7 @@ int circular_buffer_init(circular_buffer_t *cb, size_t capacity) {
 void circular_buffer_destroy(circular_buffer_t *cb) {
 	if (cb && cb->is_initialized) {
 		free(cb->buffer);
-		cb->buffer = NULL;	// 解放後はNULLにしておく
+		cb->buffer = NULL;	// Set to NULL after freeing
 		cb->capacity = 0;
 		cb->head = 0;
 		cb->tail = 0;
@@ -47,10 +47,10 @@ void circular_buffer_destroy(circular_buffer_t *cb) {
 int circular_buffer_write(circular_buffer_t *cb, const void *data, size_t bytes) {
 	CB_ENSURE_INITIALIZED(cb);
 
-	if (!data && bytes > 0) {	 // bytes > 0 なのに data が NULL は無効
+	if (!data && bytes > 0) {	 // data is NULL even though bytes > 0 is invalid
 		return CB_ERROR_INVALID_ARG;
 	}
-	if (bytes == 0) {	 // 書き込むデータがない場合は成功
+	if (bytes == 0) {	 // If there is no data to write, succeed
 		return CB_SUCCESS;
 	}
 
@@ -61,20 +61,20 @@ int circular_buffer_write(circular_buffer_t *cb, const void *data, size_t bytes)
 	const char *data_char = (const char *)data;
 	size_t current_logical_head = cb->head;
 
-	// データを2つの領域にコピーする
-	// 1. headから論理バッファの終わりまで
+	// Copy data into two regions
+	// 1. From head to the end of the logical buffer
 	size_t len_part1 = cb->capacity - current_logical_head;
 	if (len_part1 > bytes) {
 		len_part1 = bytes;
 	}
 	memcpy(cb->buffer + current_logical_head, data_char, len_part1);
-	memcpy(cb->buffer + current_logical_head + cb->capacity, data_char, len_part1);	 // ミラー領域
+	memcpy(cb->buffer + current_logical_head + cb->capacity, data_char, len_part1);	 // Mirror region
 
-	// 2. 論理バッファの先頭から残り (ラップアラウンドする場合)
+	// 2. From the beginning of the logical buffer for the remainder (if wrap-around occurs)
 	size_t remaining_bytes = bytes - len_part1;
 	if (remaining_bytes > 0) {
 		memcpy(cb->buffer, data_char + len_part1, remaining_bytes);
-		memcpy(cb->buffer + cb->capacity, data_char + len_part1, remaining_bytes);	// ミラー領域
+		memcpy(cb->buffer + cb->capacity, data_char + len_part1, remaining_bytes);	// Mirror region
 	}
 
 	cb->head = (current_logical_head + bytes) % cb->capacity;
@@ -84,36 +84,36 @@ int circular_buffer_write(circular_buffer_t *cb, const void *data, size_t bytes)
 }
 
 void *circular_buffer_get_readable_region(circular_buffer_t *cb, size_t *readable_bytes) {
-	if (!readable_bytes) {	// 出力先ポインタがNULL
+	if (!readable_bytes) {	// Output pointer is NULL
 		return NULL;
 	}
-	if (!cb) {	// バッファ構造体自体がNULL
+	if (!cb) {	// Buffer structure itself is NULL
 		*readable_bytes = 0;
 		return NULL;
 	}
-	if (!cb->is_initialized) {	// 未初期化
+	if (!cb->is_initialized) {	// Not initialized
 		*readable_bytes = 0;
 		return NULL;
 	}
 
-	if (cb->count == 0) {	 // バッファが空
+	if (cb->count == 0) {	 // Buffer is empty
 		*readable_bytes = 0;
 		return NULL;
 	}
 
 	*readable_bytes = cb->count;
-	// tail から始まる連続した領域を返す (ミラーリングのおかげで count バイト連続している)
+	// Return a contiguous region starting from tail (thanks to mirroring, count bytes are contiguous)
 	return (void *)(cb->buffer + cb->tail);
 }
 
 int circular_buffer_consume(circular_buffer_t *cb, size_t bytes_consumed) {
 	CB_ENSURE_INITIALIZED(cb);
 
-	if (bytes_consumed == 0) {	// 消費するデータがない場合は成功
+	if (bytes_consumed == 0) {	// If there is no data to consume, succeed
 		return CB_SUCCESS;
 	}
 
-	if (bytes_consumed > cb->count) {	 // 格納データ量より多く消費しようとした
+	if (bytes_consumed > cb->count) {	 // Trying to consume more than stored data
 		return CB_ERROR_CONSUME_TOO_MUCH;
 	}
 
@@ -146,14 +146,14 @@ size_t circular_buffer_get_free_space(const circular_buffer_t *cb) {
 
 bool circular_buffer_is_empty(const circular_buffer_t *cb) {
 	if (!cb || !cb->is_initialized) {
-		return true;	// 未初期化などは空とみなす
+		return true;	// Consider uninitialized etc. as empty
 	}
 	return cb->count == 0;
 }
 
 bool circular_buffer_is_full(const circular_buffer_t *cb) {
 	if (!cb || !cb->is_initialized) {
-		return false;	 // 未初期化などは満杯ではないとみなす
+		return false;	 // Consider uninitialized etc. as not full
 	}
 	return cb->count == cb->capacity;
 }

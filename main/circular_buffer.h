@@ -4,113 +4,113 @@
 #include <stdbool.h>	// For bool
 #include <stddef.h>		// For size_t
 
-// --- エラーコード定義 ---
-#define CB_SUCCESS 0									// 成功
-#define CB_ERROR_INVALID_ARG -1				// 無効な引数
-#define CB_ERROR_NOT_INITIALIZED -2		// 未初期化
-#define CB_ERROR_BUFFER_FULL -3				// バッファ満杯
-#define CB_ERROR_ALLOC_FAILED -4			// メモリ確保失敗
-#define CB_ERROR_CONSUME_TOO_MUCH -5	// 消費量が格納データ量を超過
+// --- Error code definitions ---
+#define CB_SUCCESS 0									// Success
+#define CB_ERROR_INVALID_ARG -1				// Invalid argument
+#define CB_ERROR_NOT_INITIALIZED -2		// Not initialized
+#define CB_ERROR_BUFFER_FULL -3				// Buffer full
+#define CB_ERROR_ALLOC_FAILED -4			// Memory allocation failed
+#define CB_ERROR_CONSUME_TOO_MUCH -5	// Consumed amount exceeds stored data
 
 /**
- * @brief 循環バッファ構造体
+ * @brief Circular buffer structure
  */
 typedef struct {
-	char *buffer;				 /**< 内部データバッファ (実際のサイズは capacity * 2) */
-	size_t capacity;		 /**< 論理的なバッファ容量 (ユーザー指定サイズ) */
-	size_t head;				 /**< 書き込み位置の論理インデックス (0 から capacity-1) */
-	size_t tail;				 /**< 読み出し位置の論理インデックス (0 から capacity-1) */
-	size_t count;				 /**< 現在バッファに格納されているデータのバイト数 */
-	bool is_initialized; /**< 初期化済みフラグ */
+	char *buffer;				 /**< Internal data buffer (actual size is capacity * 2) */
+	size_t capacity;		 /**< Logical buffer capacity (user-specified size) */
+	size_t head;				 /**< Logical index of write position (0 to capacity-1) */
+	size_t tail;				 /**< Logical index of read position (0 to capacity-1) */
+	size_t count;				 /**< Number of bytes currently stored in the buffer */
+	bool is_initialized; /**< Initialization flag */
 } circular_buffer_t;
 
 /**
- * @brief 循環バッファを初期化する
+ * @brief Initialize the circular buffer
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @param capacity バッファの論理容量（バイト単位）
- * @return 成功時は CB_SUCCESS、エラー時は負のエラーコード
+ * @param cb Pointer to the circular buffer structure
+ * @param capacity Buffer logical capacity (in bytes)
+ * @return CB_SUCCESS on success, negative error code on failure
  */
 int circular_buffer_init(circular_buffer_t *cb, size_t capacity);
 
 /**
- * @brief 循環バッファを破棄し、確保したメモリを解放する
+ * @brief Destroy the circular buffer and free allocated memory
  *
- * @param cb 循環バッファ構造体へのポインタ
+ * @param cb Pointer to the circular buffer structure
  */
 void circular_buffer_destroy(circular_buffer_t *cb);
 
 /**
- * @brief 循環バッファにデータを書き込む
- * データは内部バッファにコピーされる。
- * 内部ではミラーリングのため2箇所にコピーされる。
+ * @brief Write data to the circular buffer
+ * The data is copied into the internal buffer.
+ * Internally, the data is copied to two locations for mirroring.
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @param data 書き込むデータへのポインタ
- * @param bytes 書き込むデータのバイト数
- * @return 成功時は CB_SUCCESS、エラー時は負のエラーコード
+ * @param cb Pointer to the circular buffer structure
+ * @param data Pointer to the data to write
+ * @param bytes Number of bytes to write
+ * @return CB_SUCCESS on success, negative error code on failure
  */
 int circular_buffer_write(circular_buffer_t *cb, const void *data, size_t bytes);
 
 /**
- * @brief 読み出し可能な連続したデータ領域へのポインタを取得する
- * この関数はバッファの状態を変更しない（読み出し位置は進めない）。
+ * @brief Get a pointer to a contiguous readable data region
+ * This function does not modify the buffer state (does not advance the read position).
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @param[out] readable_bytes 読み出し可能な連続データのバイト数が格納されるポインタ
- * @return 読み出し可能なデータ領域へのポインタ。エラー時やデータがない場合は NULL。
+ * @param cb Pointer to the circular buffer structure
+ * @param[out] readable_bytes Pointer to store the number of readable contiguous bytes
+ * @return Pointer to the readable data region. Returns NULL on error or if no data is available.
  */
 void *circular_buffer_get_readable_region(circular_buffer_t *cb, size_t *readable_bytes);
 
 /**
- * @brief バッファからデータを消費（読み出し完了を通知）する
- * 指定されたバイト数だけ読み出し位置を進める。
+ * @brief Consume (notify completion of reading) data from the buffer
+ * Advances the read position by the specified number of bytes.
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @param bytes_consumed 消費したデータのバイト数
- * @return 成功時は CB_SUCCESS、エラー時は負のエラーコード
+ * @param cb Pointer to the circular buffer structure
+ * @param bytes_consumed Number of bytes of data consumed
+ * @return CB_SUCCESS on success, negative error code on failure
  */
 int circular_buffer_consume(circular_buffer_t *cb, size_t bytes_consumed);
 
 /**
- * @brief バッファに格納されているデータのバイト数を取得する
+ * @brief Get the number of bytes stored in the buffer
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @return 格納されているデータのバイト数。cbがNULLまたは未初期化の場合は0。
+ * @param cb Pointer to the circular buffer structure
+ * @return Number of bytes stored. Returns 0 if cb is NULL or uninitialized.
  */
 size_t circular_buffer_get_count(const circular_buffer_t *cb);
 
 /**
- * @brief バッファの論理容量を取得する
+ * @brief Get the logical capacity of the buffer
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @return バッファの論理容量。cbがNULLまたは未初期化の場合は0。
+ * @param cb Pointer to the circular buffer structure
+ * @return Logical capacity of the buffer. Returns 0 if cb is NULL or uninitialized.
  */
 size_t circular_buffer_get_capacity(const circular_buffer_t *cb);
 
 /**
- * @brief バッファの空き容量を取得する
+ * @brief Get the free space in the buffer
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @return バッファの空き容量。cbがNULLまたは未初期化の場合は0。
+ * @param cb Pointer to the circular buffer structure
+ * @return Free space in the buffer. Returns 0 if cb is NULL or uninitialized.
  */
 size_t circular_buffer_get_free_space(const circular_buffer_t *cb);
 
 /**
- * @brief バッファが空かどうかを確認する
+ * @brief Check if the buffer is empty
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @return バッファが空の場合は true、そうでない場合は false。
- * cbがNULLまたは未初期化の場合は true (空とみなす)。
+ * @param cb Pointer to the circular buffer structure
+ * @return true if the buffer is empty, false otherwise.
+ * Returns true (considered empty) if cb is NULL or uninitialized.
  */
 bool circular_buffer_is_empty(const circular_buffer_t *cb);
 
 /**
- * @brief バッファが満杯かどうかを確認する
+ * @brief Check if the buffer is full
  *
- * @param cb 循環バッファ構造体へのポインタ
- * @return バッファが満杯の場合は true、そうでない場合は false。
- * cbがNULLまたは未初期化の場合は false (満杯ではないとみなす)。
+ * @param cb Pointer to the circular buffer structure
+ * @return true if the buffer is full, false otherwise.
+ * Returns false (not considered full) if cb is NULL or uninitialized.
  */
 bool circular_buffer_is_full(const circular_buffer_t *cb);
 
