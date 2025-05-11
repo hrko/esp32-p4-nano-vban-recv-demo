@@ -8,7 +8,7 @@
 #include "lwip/netdb.h"		 // For gethostbyname (not used here for simplicity, direct IP)
 #include "lwip/sockets.h"	 // For socket functions
 
-static const char* TAG = "VBAN";
+static const char* TAG = "vban";
 
 // For converting sample rate index to actual SR value
 static const uint32_t VBAN_SAMPLE_RATES_LUT[VBAN_SR_MAX_INDEX] = {
