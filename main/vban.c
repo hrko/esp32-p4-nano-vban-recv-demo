@@ -255,7 +255,7 @@ static void vban_receive_task(void* pvParameters) {
 		vban_header_t* header = (vban_header_t*)rx_buffer;
 
 		if (header->vban_magic != VBAN_MAGIC_NUMBER) {
-			ESP_LOGD(TAG, "Receive task: Invalid VBAN magic number 0x%08X", header->vban_magic);
+			ESP_LOGD(TAG, "Receive task: Invalid VBAN magic number 0x%08X", (unsigned int)header->vban_magic);
 			continue;
 		}
 
@@ -292,7 +292,7 @@ static void vban_receive_task(void* pvParameters) {
 							(size_t)(header->samples_per_frame_m1 + 1) * (header->channels_m1 + 1) * vban_get_data_type_size(data_type);
 					if (audio_data_len != expected_payload_size) {
 						ESP_LOGW(TAG, "Receive task: Audio data size mismatch. Expected %d, got %d. Frame %u, Stream '%s'", expected_payload_size,
-										 audio_data_len, header->frame_counter, header->stream_name);
+										 audio_data_len, (unsigned)header->frame_counter, header->stream_name);
 						// continue; // Or process anyway, depending on strictness
 					}
 
