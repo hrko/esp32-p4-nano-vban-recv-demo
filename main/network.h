@@ -2,7 +2,7 @@
 #define NETWORK_H_
 
 #include "esp_err.h"
-#include "esp_netif_types.h"	// For esp_netif_ip_info_t and esp_netif_dns_info_t
+#include "esp_netif_types.h"  // For esp_netif_ip_info_t and esp_netif_dns_info_t
 
 // Constants for GPIO pin assignments, etc.
 #define NETWORK_ETH_MDC_GPIO 31
@@ -15,13 +15,13 @@ extern "C" {
 #endif
 
 typedef struct {
-	bool dhcp_enabled;
-	esp_netif_ip_info_t static_ip_info;
-	esp_netif_dns_info_t dns_main;
-	esp_netif_dns_info_t dns_backup;
-	bool mdns_enabled;
-	const char *mdns_hostname;
-	const char *mdns_instance_name;
+  bool dhcp_enabled;
+  esp_netif_ip_info_t static_ip_info;
+  esp_netif_dns_info_t dns_main;
+  esp_netif_dns_info_t dns_backup;
+  bool mdns_enabled;
+  const char *mdns_hostname;
+  const char *mdns_instance_name;
 } network_config_t;
 
 /**
@@ -73,7 +73,7 @@ esp_err_t network_create_dhcp_config(network_config_t *config);
  * - ESP_ERR_INVALID_ARG: If config, ip_addr, netmask, or gateway is NULL.
  */
 esp_err_t network_create_static_ip_config(network_config_t *config, const char *ip_addr, const char *netmask, const char *gateway,
-																					const char *dns_main_server, const char *dns_backup_server);
+                                          const char *dns_main_server, const char *dns_backup_server);
 
 /**
  * @brief Configure mDNS for the network.

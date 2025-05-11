@@ -1,5 +1,2 @@
 BasedOnStyle: Google
 ColumnLimit: 140
-UseTab: Always
-IndentWidth: 2
-TabWidth: 2

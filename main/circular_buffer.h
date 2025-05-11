@@ -1,27 +1,27 @@
 #ifndef CIRCULAR_BUFFER_H
 #define CIRCULAR_BUFFER_H
 
-#include <stdbool.h>	// For bool
-#include <stddef.h>		// For size_t
+#include <stdbool.h>  // For bool
+#include <stddef.h>   // For size_t
 
 // --- Error code definitions ---
-#define CB_SUCCESS 0									// Success
-#define CB_ERROR_INVALID_ARG -1				// Invalid argument
-#define CB_ERROR_NOT_INITIALIZED -2		// Not initialized
-#define CB_ERROR_BUFFER_FULL -3				// Buffer full
-#define CB_ERROR_ALLOC_FAILED -4			// Memory allocation failed
-#define CB_ERROR_CONSUME_TOO_MUCH -5	// Consumed amount exceeds stored data
+#define CB_SUCCESS 0                  // Success
+#define CB_ERROR_INVALID_ARG -1       // Invalid argument
+#define CB_ERROR_NOT_INITIALIZED -2   // Not initialized
+#define CB_ERROR_BUFFER_FULL -3       // Buffer full
+#define CB_ERROR_ALLOC_FAILED -4      // Memory allocation failed
+#define CB_ERROR_CONSUME_TOO_MUCH -5  // Consumed amount exceeds stored data
 
 /**
  * @brief Circular buffer structure
  */
 typedef struct {
-	char *buffer;				 /**< Internal data buffer (actual size is capacity * 2) */
-	size_t capacity;		 /**< Logical buffer capacity (user-specified size) */
-	size_t head;				 /**< Logical index of write position (0 to capacity-1) */
-	size_t tail;				 /**< Logical index of read position (0 to capacity-1) */
-	size_t count;				 /**< Number of bytes currently stored in the buffer */
-	bool is_initialized; /**< Initialization flag */
+  char *buffer;        /**< Internal data buffer (actual size is capacity * 2) */
+  size_t capacity;     /**< Logical buffer capacity (user-specified size) */
+  size_t head;         /**< Logical index of write position (0 to capacity-1) */
+  size_t tail;         /**< Logical index of read position (0 to capacity-1) */
+  size_t count;        /**< Number of bytes currently stored in the buffer */
+  bool is_initialized; /**< Initialization flag */
 } circular_buffer_t;
 
 /**
@@ -114,4 +114,4 @@ bool circular_buffer_is_empty(const circular_buffer_t *cb);
  */
 bool circular_buffer_is_full(const circular_buffer_t *cb);
 
-#endif	// CIRCULAR_BUFFER_H
+#endif  // CIRCULAR_BUFFER_H
